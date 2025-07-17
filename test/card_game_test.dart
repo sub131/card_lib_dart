@@ -1,37 +1,65 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:wwwy/pile_and_deck.dart';
-import 'package:wwwy/card_and_suit.dart';
+import 'package:subsoft.cards/common_decks.dart';
+import 'package:subsoft.cards/pile_and_deck.dart';
+import 'package:subsoft.cards/card_and_suit.dart';
 
 void main() {
   Game calc = Game();
   calc.toString;
 
   test('Creates one of each', () {
+
+    /// Test addition of suits and cards
     String test= "Test";
     expect(Suit.numOfSuits, 0);
     
     Suit s1 = Suit(test);
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 0);
-    Deck deck = Deck.emptyDeck(true);
-    deck.addNewCard(s1, "t1");
+    Deck deck1 = Deck.emptyDeck(true);
+    deck1.addNewCard(s1, "t1");
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 1);
     
-    deck.addNewCard(s1, "t1");
+    deck1.addNewCard(s1, "t1");
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 1, reason:"adding duplicate with allowDuplicates==true doesn't increment rank");
-    expect(deck.length, 2, reason: 'Adding duplicate with allowDuplicates==true');  
-    deck.addNewCard(s1, "t2");
+    expect(deck1.length, 2, reason: 'Adding duplicate with allowDuplicates==true');  
+    deck1.addNewCard(s1, "t2");
 
-    // TODO: test remove
-    Card? firstT1 = deck.removeFirstMatchingCard(suit: s1);
+    /// Test removal of matching cards and WhatIsCard functions 
+    // [t2, t1, t1]
+    expect(deck1.length, 3);
+    expect(deck1.whatIsTopCard()?.name, "t2 of Test");
+    expect(deck1.whatIsCard(0)?.name, "t2 of Test");
+    expect(deck1.whatIsCard(1)?.name, "t1 of Test");
+    expect(deck1.whatIsCard(2)?.name, "t1 of Test"); 
+    Card? firstT1 = deck1.removeFirstMatchingCard(rankName: "t1");
+    // [t2, t1] 
+    expect(firstT1?.name, "t1 of Test");
+    expect(deck1.length, 2);
+    expect(deck1.whatIsTopCard()?.name, "t2 of Test");
+    expect(deck1.whatIsCard(0)?.name, "t2 of Test");
+    expect(deck1.whatIsCard(1)?.name, "t1 of Test");
+    expect(deck1.whatIsCard(2)?.name, null);
 
+    Card? nullCard = deck1.removeFirstMatchingCard(suit: s1, rank: 2, rankName: "t1");
+    // [t2, t1] 
+    expect(nullCard, null);
+    Card? firstT2 = deck1.removeFirstMatchingCard(suit: s1, rank: 2);
+    // [t1] 
+    expect(firstT2?.name, "t2 of Test");
+    expect(deck1.length, 1);
+    expect(deck1.whatIsTopCard()?.name, "t1 of Test");
+    expect(deck1.whatIsCard(0)?.name, "t1 of Test");
+    expect(deck1.whatIsCard(1)?.name, null);
+    expect(deck1.whatIsCard(2)?.name, null);  
 
+    /// Test duplicate suits
     expect(() => Suit(" Test".trimLeft()), throwsA(isArgumentError), reason: "no duplicate Suits");
     
+    /// Add second suit
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 2);
     Suit s2 = Suit("Test2");
@@ -46,6 +74,30 @@ void main() {
     expect(Suit.numOfSuits, 2);
     expect(s2.numOfRanks, 1, reason: 'Adding unallowed duplicate cards silently leaves it unchanged');  
     expect(deck2.length, 1, reason: 'Adding unallowed duplicate cards silently leaves it unchanged');  
+
+    Deck deck3 = Deck.emptyDeck(true);
+    Suit s3 = Suit("Test3");
+    deck3.addNewCard(s1, "t1");
+    deck3.addNewCard(s2, "t1");
+    deck3.addNewCard(s3, "t1");
+    // d1=[t1s1] d3=[t1s3, t1s2, t1s1]
+    deck3.addNewCard(s3, "t2");
+    // d1=[t1s1] d3=[t2s3, t1s3, t1s2, t1s1]
+    expect(deck3.whatIsCard(0)?.name, "t2 of Test3");
+    expect(deck3.whatIsCard(1)?.name, "t1 of Test3");
+    expect(deck3.whatIsCard(2)?.name, "t1 of Test2");
+    expect(deck3.whatIsCard(3)?.name, "t1 of Test");  
+    expect(deck3.whatIsCard(4)?.name, null);  
+
+    deck3.moveAllMatchingCardsToPile(deck1, rankName: "t1");
+    // d1=[t1s1, t1s2, t1s3, t1s1] d3=[t2s2]
+    expect(deck1.whatIsCard(0)?.name, "t1 of Test");
+    expect(deck1.whatIsCard(1)?.name, "t1 of Test2");
+    expect(deck1.whatIsCard(2)?.name, "t1 of Test3");
+    expect(deck1.whatIsCard(3)?.name, "t1 of Test");  
+    expect(deck1.whatIsCard(4)?.name, null);  
+    expect(deck3.whatIsCard(0)?.name, "t2 of Test3");  
+    expect(deck3.whatIsCard(1)?.name, null);  
   });
 
   test('Create default names, weapons and locations, picks random ones', () {

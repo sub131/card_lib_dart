@@ -1,16 +1,23 @@
+import 'package:flutter/widgets.dart';
+
 import 'card_and_suit.dart';
 /// A Calculator.
 class Game {
   /// TBD
 }
 
-
+/// For efficiency, cardPiles are implemented as a reversed list since most common actions are
+/// to add or remove from the top (end of list). All lists returned will be unmodifyable 
+/// reversed lists (0 being top). 
+/// That has the consequence that some operations seem backwards. Adding a card adds it to the
+/// top (index 0), removing it removes it from the top (index 0). Adding 1, 2, then 3 will 
+/// leave the pile at 3, 2, 1 with 3 on the top.
 class CardPile {
   final List<Card> _cards = [];
-  get length { return _cards.length;}
-  get cards { return List<Card>.unmodifiable(_cards);}
+  int get length { return _cards.length;}
+  List<Card> get cards { return List<Card>.unmodifiable(_cards.reversed);}
   shuffle () {_cards.shuffle();}
-  var isTopVisible = false;
+  bool isTopVisible = false;
 
   Card? removeTopCard() {
     if (length > 0) {
@@ -19,9 +26,17 @@ class CardPile {
       return null;
     }
   }
+  int _reverseIndex(int index) {
+    // reversed index (0 = last, length-1 = first)
+      return length-1-index;
+  }
+  bool _validIndex(int index) {
+    return (index < length && index >= 0);
+  }
   Card? removeCard(int index) {
-    if (index < length && index >= 0) {
-      return _cards.removeAt(index);
+    if (_validIndex(index)) {
+      // Remove reversed index (0 = last, length-1 = first)
+      return _cards.removeAt(_reverseIndex(index));
     } else {
       return null;
     }
@@ -34,8 +49,8 @@ class CardPile {
     }
   }
   Card? whatIsCard(int index) {
-    if (index < length && index >= 0) {
-      return _cards[index];
+    if (_validIndex(index)) {
+      return _cards[_reverseIndex(index)];
     } else {
       return null;
     }
@@ -47,16 +62,17 @@ class CardPile {
   /// - removeFirstMatchingCard(suit: DefaultCardDeck.hearts, name: "ace") => returns the ace of hearts
   /// - removeFirstMatchingCard(rank: 1) => returns the first ace of any suit
   /// - removeFirstMatchingCard(rank: 1, name: "two") => returns null (asking for a "two" that's rank 1)
-  Card? removeFirstMatchingCard({Suit? suit, String? name, int? rank}) {
-    if (suit==null && name==null && rank==null) {
+  Card? removeFirstMatchingCard({Suit? suit, String? rankName, int? rank}) {
+    if (suit==null && rankName==null && rank==null) {
       return null;
     }
-    for (Card card in cards) {
-      if ((suit == null || card.suit == suit) && 
-          (name == null || card.name == name) &&
+    for (int index=0; index < length; index++) {
+      Card? card = whatIsCard(index);
+      if (card != null &&
+          (suit == null || card.suit == suit) && 
+          (rankName == null || card.rankName == rankName) &&
           (rank == null || card.rank == rank)) {
-        _cards.remove(card);
-        return card;
+        return removeCard(index);
       }
     }
     return null;
@@ -81,22 +97,40 @@ class CardPile {
     }
     return false;
   }
-  /// Moves the first card to match all of the supplied parameters (suit, name or rank). Returns true
+  /// Moves the first card to match all of the supplied parameters (suit, rankName or rank). Returns true
   /// if a move was made.
-  /// If no parameters are supplied, nothing will be found. Usually only name or rank will be necessary
+  /// If no parameters are supplied, nothing will be found. Usually only rankName or rank will be necessary
   /// as they are usually related. Examples: 
   /// - moveFirstMatchingCardToPile(other, suit: DefaultCardDeck.hearts) => moves the first heart
-  /// - moveFirstMatchingCardToPile(other, suit: DefaultCardDeck.hearts, name: "ace") => moves the ace of hearts
+  /// - moveFirstMatchingCardToPile(other, suit: DefaultCardDeck.hearts, rankName: "ace") => moves the ace of hearts
   /// - moveFirstMatchingCardToPile(other, rank: 1) => moves the first ace of any suit
-  /// - moveFirstMatchingCardToPile(other, rank: 1, name: "two") => returns false (asking for a "two" that's rank 1)
-  bool moveFirstMatchingCardToPile(CardPile pile, {Suit? suit, String? name, int? rank}) {
-    Card? card = removeFirstMatchingCard(suit: suit, name: name, rank: rank);
+  /// - moveFirstMatchingCardToPile(other, rank: 1, rankName: "two") => returns false (asking for a "two" that's rank 1)
+  bool moveFirstMatchingCardToPile(CardPile pile, {Suit? suit, String? rankName, int? rank}) {
+    Card? card = removeFirstMatchingCard(suit: suit, rankName: rankName, rank: rank);
     if (card==null) {
       return false;
     } else {
       pile.addCard(card);
       return true;
     }
+  }
+  /// Moves all cards that match all of the supplied parameters (suit, rankName or rank). Returns true
+  /// if a move was made.
+  /// If no parameters are supplied, nothing will be found. Usually only rankName or rank will be necessary
+  /// as they are usually related. Examples: 
+  /// - moveAllMatchingCardsToPile(other, suit: DefaultCardDeck.hearts) => moves the hearts
+  /// - moveAllMatchingCardsToPile(other, suit: DefaultCardDeck.hearts, rankName: "ace") => moves the ace of hearts
+  /// - moveAllMatchingCardsToPile(other, rank: 1) => moves the aces of every suit
+  /// - moveAllMatchingCardsToPile(other, rank: 1, rankName: "two") => returns false (asking for a "two" that's rank 1)
+  bool moveAllMatchingCardsToPile(CardPile pile, {Suit? suit, String? rankName, int? rank}) {
+    Card? card = removeFirstMatchingCard(suit: suit, rankName: rankName, rank: rank);
+    bool removed = false;
+    while (card != null) {
+      pile.addCard(card);
+      removed = true;
+      card = removeFirstMatchingCard(suit: suit, rankName: rankName, rank: rank);
+    }
+    return removed;
   }
   addCard(Card card) {
     _cards.add(card);
@@ -110,6 +144,16 @@ class CardPile {
       return false;
     }
   }
+  bool moveCardsToPile(CardPile other) {
+    Card? card = removeTopCard();
+    bool removed = false;
+    while (card != null) {
+      other.addCard(card);
+      removed = true;
+      card = removeTopCard();
+    }
+    return removed;
+  }
 }
 
 class Deck extends CardPile {
@@ -117,7 +161,15 @@ class Deck extends CardPile {
   final List<Card> _addedCards = [];
   final Map<Suit, Map<int, Card>> _addedCardsBySuiteRank = {};
   List<Card> get addedCards {return List<Card>.unmodifiable(_addedCards);}
-  var allowDuplicates = false;
+  bool allowDuplicates = false;
+
+  Deck duplicate() {
+    Deck newDeck = Deck.emptyDeck(allowDuplicates);
+    newDeck._addedCards.addAll(addedCards);
+    newDeck._addedCardsBySuiteRank.addAll(_addedCardsBySuiteRank);
+    newDeck._cards.addAll(_cards);
+    return newDeck;
+  }
   
   /// Adds each list of rank names to the suit and to the deck.
   /// @param rankNamesPerSuit a mapping of suits to list of rank names in that suit
@@ -172,60 +224,4 @@ class Deck extends CardPile {
     return cards.toString();
   }
 
-}
-abstract class CommonDefaultDecks {
-  final Map<Suit,List<String>> deckInfo = {};
-  CommonDefaultDecks();
-  Deck _createDeck({allowDuplicates=false, bool addSuitToName=true}) {
-    return Deck(deckInfo, allowDuplicates: allowDuplicates, addSuitToName: addSuitToName);
-  }
-  Deck create();
-}
-
-class DefaultCardDeck extends CommonDefaultDecks {
-  Suit hearts = Suit("hearts");
-  Suit clubs = Suit("clubs");
-  Suit spades = Suit("spades");
-  Suit diamonds = Suit("diamonds");
-  var cards = ["ace", "two", "three","four","five","six","seven","eight","nine","ten","jack","queen","king"];
-
-  DefaultCardDeck() {
-    deckInfo[hearts] = cards;
-    deckInfo[clubs] = cards;
-    deckInfo[spades] = cards;
-    deckInfo[diamonds] = cards;
-  }
-
-  @override 
-  Deck create() {return _createDeck();}
-}
-class DefaultCardDeckWithJokers extends DefaultCardDeck {
-  Suit jokers = Suit("jokers");
-  var jokerNames = ["red joker","black joker"];
-
-  DefaultCardDeckWithJokers() {
-    deckInfo[jokers] = jokerNames;
-  }
-  
-  @override 
-  Deck create() {return _createDeck();}
-}
-
-class ClueDeck extends CommonDefaultDecks {
-  Suit who = Suit("who");
-  Suit what = Suit("what");
-  Suit where = Suit("where");
-  var people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
-  var weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
-  var locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
-
-
-  ClueDeck() {
-    deckInfo[who] = people;
-    deckInfo[what] = weapons;
-    deckInfo[where] = locations;
-  }
-  
-  @override 
-  Deck create() {return _createDeck(addSuitToName: false);}
 }
