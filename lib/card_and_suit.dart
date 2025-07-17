@@ -1,11 +1,4 @@
-class Named {
-  final String name;
-  const Named(this.name);
-  @override
-  String toString() {
-    return name;
-  }
-}
+import 'package:subsoft.cards/named.dart';
 
 /// Suit class, contains information about the suit and card names in it, including:
 /// - Suit.suitNames: Names of all created suits
@@ -54,8 +47,9 @@ class Suit extends Named {
 class Card extends Named {
   final Suit suit;
   final int rank;
-  Card(this.suit, String rankName, super.name) : rank = suit._incrementCards(rankName);
-  Card.standard52(this.suit, String rankName) : rank = suit._incrementCards(rankName), super("$rankName of ${suit.name}");
+  final String rankName;
+  Card(this.suit, this.rankName, super.name) : rank = suit._incrementCards(rankName);
+  Card.standard52(this.suit, this.rankName) : rank = suit._incrementCards(rankName), super("$rankName of ${suit.name}");
   
   @override
   String toString() {
