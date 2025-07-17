@@ -26,8 +26,8 @@ Install VSCode and Flutter extension, run Flutter Doctor.
 ## Usage
 
 ```dart
-import 'package:wwwy/game.dart';
-import 'package:wwwy/card.dart';
+import 'package:subsoft.cards/game.dart';
+import 'package:subsoft.cards/card.dart';
 
 var cardDeck = DefaultCardDeck();
 var deck = cardDeck.createDeck();
