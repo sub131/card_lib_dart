@@ -12,18 +12,18 @@
         },
         
         {
-            "name": "wwwh",
+            "name": "cards",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "wwwh (profile mode)",
+            "name": "cards (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "wwwh (release mode)",
+            "name": "cards (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
