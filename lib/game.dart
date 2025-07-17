@@ -1,15 +1,14 @@
 import 'card.dart';
 /// A Calculator.
 class Game {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-  Suit? type;
+  /// TBD
 }
+
 
 class CardPile {
   final List<Card> _cards = [];
-  get length { return cards.length;}
-  get cards { return _cards;}
+  get length { return _cards.length;}
+  get cards { return List<Card>.unmodifiable(_cards);}
   shuffle () {_cards.shuffle();}
   var isTopVisible = false;
 
@@ -111,4 +110,122 @@ class CardPile {
       return false;
     }
   }
+}
+
+class Deck extends CardPile {
+  static const String undefinedName = "UNDEFINED";
+  final List<Card> _addedCards = [];
+  final Map<Suit, Map<int, Card>> _addedCardsBySuiteRank = {};
+  List<Card> get addedCards {return List<Card>.unmodifiable(_addedCards);}
+  var allowDuplicates = false;
+  
+  /// Adds each list of rank names to the suit and to the deck.
+  /// @param rankNamesPerSuit a mapping of suits to list of rank names in that suit
+  /// @param allowDuplicates set to true to allow multiple identical cards to be added to the deck (default false)
+  /// @param addSuitToName set to true to use the same name for the card as for the rankName (default true)
+  ///   (e.g. '$rankName' vs '$rankName of ${suit.name}') 
+  Deck(Map<Suit,List<String>> rankNamesPerSuit, {this.allowDuplicates=false, bool addSuitToName=true}) {
+    for (var suit in rankNamesPerSuit.keys) {
+      for (var name in (rankNamesPerSuit[suit]??[])) {
+        addSuitToName ? 
+          addNewCard(suit, name) :
+          addNewCard(suit, name, cardName: name);
+      }
+    }
+  }
+  Deck.emptyDeck(this.allowDuplicates);
+
+  /// Adds a new card to the deck. If duplicates are allowed,
+  /// then adding duplicate names creates two such
+  addNewCard(Suit suit, String rankName, {String? cardName}) {
+    if (rankName.toUpperCase() == undefinedName.toUpperCase()) {
+      throw ArgumentError("Name can't be undefinedName");
+    }
+
+    if (allowDuplicates || suit.rankNumber(rankName)==null) {
+      //If not already added, add it.
+      Card newCard;
+      bool isStandard52 = cardName==null;
+      if (isStandard52) {
+        newCard = Card.standard52(suit, rankName);
+      } else {
+        newCard = Card(suit, rankName, cardName);
+      }
+      addCard(newCard);
+      _addedCards.add(newCard);
+      if (!_addedCardsBySuiteRank.containsKey(suit)) {
+        _addedCardsBySuiteRank[suit] = {};
+      }
+      _addedCardsBySuiteRank[suit]?[newCard.rank] = newCard;
+    }
+  }
+  String rankName(Suit suit, int rank) {
+    return suit.rankName(rank) ?? undefinedName;
+  }
+  String cardName(Suit suit, int rank) {
+    return _addedCardsBySuiteRank[suit]?[rank]?.name ?? undefinedName;
+  }
+  Deck.createDefaultClue();
+
+  @override
+  String toString() {
+    return cards.toString();
+  }
+
+}
+abstract class CommonDefaultDecks {
+  final Map<Suit,List<String>> deckInfo = {};
+  CommonDefaultDecks();
+  Deck _createDeck({allowDuplicates=false, bool addSuitToName=true}) {
+    return Deck(deckInfo, allowDuplicates: allowDuplicates, addSuitToName: addSuitToName);
+  }
+  Deck create();
+}
+
+class DefaultCardDeck extends CommonDefaultDecks {
+  Suit hearts = Suit("hearts");
+  Suit clubs = Suit("clubs");
+  Suit spades = Suit("spades");
+  Suit diamonds = Suit("diamonds");
+  var cards = ["ace", "two", "three","four","five","six","seven","eight","nine","ten","jack","queen","king"];
+
+  DefaultCardDeck() {
+    deckInfo[hearts] = cards;
+    deckInfo[clubs] = cards;
+    deckInfo[spades] = cards;
+    deckInfo[diamonds] = cards;
+  }
+
+  @override 
+  Deck create() {return _createDeck();}
+}
+class DefaultCardDeckWithJokers extends DefaultCardDeck {
+  Suit jokers = Suit("jokers");
+  var jokerNames = ["red joker","black joker"];
+
+  DefaultCardDeckWithJokers() {
+    deckInfo[jokers] = jokerNames;
+  }
+  
+  @override 
+  Deck create() {return _createDeck();}
+}
+
+class ClueDeck extends CommonDefaultDecks {
+  Suit who = Suit("who");
+  Suit what = Suit("what");
+  Suit where = Suit("where");
+  var people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
+  var weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
+  var locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
+
+
+  ClueDeck() {
+    deckInfo[who] = people;
+    deckInfo[what] = weapons;
+    deckInfo[where] = locations;
+  }
+  
+  @override 
+  Deck create() {return _createDeck(addSuitToName: false);}
 }
