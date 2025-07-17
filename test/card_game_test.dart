@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:wwwy/game.dart';
-import 'package:wwwy/card.dart';
+import 'package:wwwy/pile_and_deck.dart';
+import 'package:wwwy/card_and_suit.dart';
 
 void main() {
   Game calc = Game();
