@@ -7,18 +7,38 @@ class Named {
   }
 }
 
+/// Suit class, contains information about the suit and card names in it, including:
+/// - Suit.suitNames: Names of all created suits
+/// - Suit.suitName(int) & Suit.suitNumber(String): lookup functions between suit name to suitNumber
+/// - numOfCards: highest rank (e.g. returns 13 for standard 52 card deck suit)
+/// - rankNames: Names of all ranks in this suit
+/// - rankName(int) & rankNumber(String): lookup functions between card rank and card Name
+/// Use Suit.resetSuits() to clear all static suit information 
 class Suit extends Named {
-  static Set<String> suitNames={};
-  static get numOfSuits {return suitNames.length;}
+  static final List<String> _suitNames=[];
+  static final Map<String, int> _suitNamesToSuitNum={};
+  static get numOfSuits {return _suitNames.length;}
+  static List<String> get suitNames {return List<String>.unmodifiable(_suitNames);}
+  static String? suitName(int suitNum) {return _suitNames.elementAtOrNull(suitNum);}
+  static int? suitNumber(String suitName) {return _suitNamesToSuitNum.containsKey(suitName) ? _suitNamesToSuitNum[suitName]: null;}
   static resetSuits() {
-    suitNames.clear();
+    _suitNames.clear();
+    _suitNamesToSuitNum.clear();
   }
-
-  get numOfCards { return _numOfCards;}
-  int _numOfCards=0;
-
-  int incrementCards() {
-    return ++_numOfCards;
+  
+  final Map<String, int> _rankNamesToRank={};
+  final List<String> _rankNames=[];
+  List<String> get rankNames {return List<String>.unmodifiable(_rankNames);}
+  int get numOfRanks { return rankNames.length;}
+  String? rankName(int rank) {return _rankNames.elementAtOrNull(rank);}
+  int? rankNumber(String rankName) {return _rankNamesToRank.containsKey(rankName) ? _rankNamesToRank[rankName]: null;}
+  
+  int _incrementCards(String name) {
+    if (!_rankNamesToRank.containsKey(name)) {
+      _rankNames.add(name);
+      _rankNamesToRank[name] = numOfRanks;
+    }
+    return numOfRanks;
   }
   final int suitNum;
   Suit(super.name) : suitNum = suitNames.length+1
@@ -26,119 +46,19 @@ class Suit extends Named {
     if (suitNames.contains(name)) {
       throw ArgumentError("Duplicate Suits not allowed");
     }
-    suitNames.add(name);
+    _suitNames.add(name);
+    _suitNamesToSuitNum[name] = numOfSuits;    
   }
 }
 
 class Card extends Named {
   final Suit suit;
   final int rank;
-  Card(this.suit, super.name) : rank = suit.incrementCards();
+  Card(this.suit, String rankName, super.name) : rank = suit._incrementCards(rankName);
+  Card.standard52(this.suit, String rankName) : rank = suit._incrementCards(rankName), super("$rankName of ${suit.name}");
   
   @override
   String toString() {
     return '{suit: $suit, rank: $rank, name: "$name"}';
-  }
-}
-
-class Deck {
-  var allowDuplicates = false;
-  var cards = [];
-  Map<Suit, Map<int, String>> customizableNamesByIndex = {};
-  Map<Suit, Map<String, int>> customizableIndexByNames = {};
-
-  String? getNameByCardNum(Suit suit, int cardNum) {
-    return customizableNamesByIndex[suit]?[cardNum];
-  }
-  int? getCardNumByName(Suit suit, String name) {
-    return customizableIndexByNames[suit]?[name];
-  }
-
-  Card? get removeTopCard {
-    if (cards.isEmpty) return null;
-    return cards.removeLast();
-  }
-  Card? removeFirst(Suit suit) {
-    Card? card = cards.firstWhere((element) => element.suit==suit, orElse: () => null);
-    cards.remove(card);
-    return card;
-  }
-
-  Deck(Map<Suit,List<String>> numPerSuit, {this.allowDuplicates=false}) {
-    for (var suit in numPerSuit.keys) {
-      customizableNamesByIndex[suit] = {};
-      customizableIndexByNames[suit] = {};
-      for (var name in (numPerSuit[suit]??[])) {
-        addNewCard(suit, name);
-      }
-    }
-  }
-  Deck.emptyDeck(this.allowDuplicates);
-  addNewCard(Suit suit, String name) {
-    if (!customizableIndexByNames.containsKey(suit)){
-      customizableIndexByNames[suit] = {};
-      customizableNamesByIndex[suit] = {};
-    }
-    if (allowDuplicates || !customizableIndexByNames[suit]!.containsKey(name)) {
-      //If not already added, add it.
-      Card newCard = Card(suit, name);
-      customizableNamesByIndex[suit]![newCard.rank] = name;
-      customizableIndexByNames[suit]![name] = newCard.rank;
-      cards.add(newCard);
-    }
-  }
-  shuffle() {
-    cards.shuffle();
-  }
-  String name(Suit suit, int index) {
-    return customizableNamesByIndex[suit]![index] ?? "UNDEFINED";
-  }
-  String cardName(Card card) {
-    return name(card.suit, card.rank);
-  }
-  Deck.createDefaultClue();
-
-  @override
-  String toString() {
-    return cards.toString();
-  }
-
-}
-class CommonDefaultDecks {
-  final Map<Suit,List<String>> deckInfo = {};
-  CommonDefaultDecks();
-  Deck createDeck() {
-    return Deck(deckInfo);
-  }
-}
-
-class DefaultCardDeck extends CommonDefaultDecks {
-  Suit hearts = Suit("hearts");
-  Suit clubs = Suit("clubs");
-  Suit spades = Suit("spades");
-  Suit diamonds = Suit("diamonds");
-  var cards = ["ace", "two", "three","four","five","six","seven","eight","nine","ten","jack","queen","king"];
-
-  DefaultCardDeck() {
-    deckInfo[hearts] = cards;
-    deckInfo[clubs] = cards;
-    deckInfo[spades] = cards;
-    deckInfo[diamonds] = cards;
-  }
-}
-
-class ClueDeck extends CommonDefaultDecks {
-  Suit who = Suit("who");
-  Suit what = Suit("what");
-  Suit where = Suit("where");
-  var people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
-  var weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
-  var locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
-
-
-  ClueDeck() {
-    deckInfo[who] = people;
-    deckInfo[what] = weapons;
-    deckInfo[where] = locations;
   }
 }
