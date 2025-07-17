@@ -1,4 +1,4 @@
-import 'card.dart';
+import 'card_and_suit.dart';
 /// A Calculator.
 class Game {
   /// TBD
