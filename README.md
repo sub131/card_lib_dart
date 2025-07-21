@@ -39,4 +39,4 @@ See GitHub site [card_lib_dart](https://github.com/sub131/card_lib_dart) for mor
 
 ## License 
 
-This project is licensed under the terms of the MIT license.
+This project is licensed under the terms of the MIT license. Copyright (C) 2025 by sub131
