@@ -1,4 +1,9 @@
-import 'package:subsoft.cards/named.dart';
+// MIT License
+// Copyright (c) 2025 by sub131
+
+//@TODO: Add suit and card compare, ace high, jokers higher?
+
+import 'package:playing_cards/named.dart';
 
 /// Suit class, contains information about the suit and card names in it, including:
 /// - Suit.suitNames: Names of all created suits
@@ -14,10 +19,6 @@ class Suit extends Named {
   static List<String> get suitNames {return List<String>.unmodifiable(_suitNames);}
   static String? suitName(int suitNum) {return _suitNames.elementAtOrNull(suitNum);}
   static int? suitNumber(String suitName) {return _suitNamesToSuitNum.containsKey(suitName) ? _suitNamesToSuitNum[suitName]: null;}
-  static resetSuits() {
-    _suitNames.clear();
-    _suitNamesToSuitNum.clear();
-  }
   
   final Map<String, int> _rankNamesToRank={};
   final List<String> _rankNames=[];

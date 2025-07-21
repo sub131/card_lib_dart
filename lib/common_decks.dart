@@ -1,67 +1,81 @@
-import 'package:subsoft.cards/card_and_suit.dart';
-import 'package:subsoft.cards/pile_and_deck.dart';
+// MIT License
+// Copyright (c) 2025 by sub131
+import 'package:playing_cards/card_and_suit.dart';
+import 'package:playing_cards/pile_and_deck.dart';
 
-abstract class CommonDefaultDecks {
-  final Map<Suit,List<String>> deckInfo = {};
-  CommonDefaultDecks();
-  Deck _createDeck({allowDuplicates=false, bool addSuitToName=true}) {
-    return Deck(deckInfo, allowDuplicates: allowDuplicates, addSuitToName: addSuitToName);
-  }
-  Deck create();
+/// Abstract class in case we want to add anything to common decks, like reset, etc.
+abstract class CommonDefaultDecks extends Deck {
+  CommonDefaultDecks(super.deckInfo, {super.addSuitToName=true});
 }
 
+/// Standard 52 card deck, no jokers
 class DefaultCardDeck extends CommonDefaultDecks {
-  Suit hearts = Suit("hearts");
-  Suit clubs = Suit("clubs");
-  Suit spades = Suit("spades");
-  Suit diamonds = Suit("diamonds");
-  var cards = ["ace", "two", "three","four","five","six","seven","eight","nine","ten","jack","queen","king"];
-
-  DefaultCardDeck() {
-    deckInfo[hearts] = cards;
-    deckInfo[clubs] = cards;
-    deckInfo[spades] = cards;
-    deckInfo[diamonds] = cards;
+  static Suit hearts = Suit("hearts");
+  static Suit clubs = Suit("clubs");
+  static Suit spades = Suit("spades");
+  static Suit diamonds = Suit("diamonds");
+  static List<String> cardNames = ["ace", "two", "three","four","five","six","seven","eight","nine","ten","jack","queen","king"];
+  static Map<Suit,List<String>> _populateInfo() {
+    Map<Suit,List<String>> deckInfo = {};
+    deckInfo[hearts] = cardNames;
+    deckInfo[clubs] = cardNames;
+    deckInfo[spades] = cardNames;
+    deckInfo[diamonds] = cardNames;
+    return deckInfo;
   }
 
-  @override 
-  Deck create() {return _createDeck();}
-  Deck createMultipleDecks(int totalNumOfDecks) {
-    Deck deck = create();
-    for (int i=0; i < totalNumOfDecks; i++) {
-      deck.duplicate().moveCardsToPile(deck);
+  /// Creates a standard deck
+  DefaultCardDeck() :super(_populateInfo());
+
+  /// Creates a standard deck
+  DefaultCardDeck.createFromInfo(super.info);
+
+  /// Creates a standard multi-deck deck
+  DefaultCardDeck.createMultipleDecks(int totalNumOfDecks) :super(_populateInfo()) {
+    // Start at 1 since we already have this deck finished
+    for (int i=1; i<totalNumOfDecks; i++) {
+      CardPile otherPile = duplicate();
+      otherPile.moveCardsToPile(this);
     }
-    return deck;
   }
 }
 
+/// Exctends the standard 52 card deck with 2 jokers (red and black)
 class DefaultCardDeckWithJokers extends DefaultCardDeck {
-  Suit jokers = Suit("jokers");
-  var jokerNames = ["red joker","black joker"];
-
-  DefaultCardDeckWithJokers() {
+  static Suit jokers = Suit("jokers");
+  static List<String> jokerNames = ["red joker","black joker"];
+  static Map<Suit,List<String>> _populateInfo() {
+    Map<Suit,List<String>> deckInfo = DefaultCardDeck._populateInfo();
     deckInfo[jokers] = jokerNames;
+    return deckInfo;
   }
-  
-  @override 
-  Deck create() {return _createDeck();}
+  DefaultCardDeckWithJokers() :super.createFromInfo(_populateInfo());
+
+  /// Creates a standard multi-deck deck
+  DefaultCardDeckWithJokers.createMultipleDecks(int totalNumOfDecks) :super.createFromInfo(_populateInfo()) {
+    // Start at 1 since we already have this deck finished
+    for (int i=1; i<totalNumOfDecks; i++) {
+      CardPile otherPile = duplicate();
+      otherPile.moveCardsToPile(this);
+    }
+  }
 }
 
+/// Creates a clue-style deck with default cards
 class ClueDeck extends CommonDefaultDecks {
-  Suit who = Suit("who");
-  Suit what = Suit("what");
-  Suit where = Suit("where");
-  var people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
-  var weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
-  var locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
-
-
-  ClueDeck() {
+  static Suit who = Suit("who");
+  static Suit what = Suit("what");
+  static Suit where = Suit("where");
+  static List<String> people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
+  static List<String> weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
+  static List<String> locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
+  static Map<Suit,List<String>> _populateInfo() {
+    Map<Suit,List<String>> deckInfo = {};
     deckInfo[who] = people;
     deckInfo[what] = weapons;
     deckInfo[where] = locations;
+    return deckInfo;
   }
-  
-  @override 
-  Deck create() {return _createDeck(addSuitToName: false);}
+
+  ClueDeck() :super(_populateInfo(), addSuitToName: false);
 }
