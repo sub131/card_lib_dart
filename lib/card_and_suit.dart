@@ -24,7 +24,7 @@ class Suit extends Named {
   final List<String> _rankNames=[];
   List<String> get rankNames {return List<String>.unmodifiable(_rankNames);}
   int get numOfRanks { return rankNames.length;}
-  String? rankName(int rank) {return _rankNames.elementAtOrNull(rank);}
+  String? rankName(int rank) {return _rankNames.elementAtOrNull(rank-1);}
   int? rankNumber(String rankName) {return _rankNamesToRank.containsKey(rankName) ? _rankNamesToRank[rankName]: null;}
   
   int _incrementCards(String name) {

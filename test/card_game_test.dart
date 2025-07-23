@@ -272,4 +272,27 @@ void main() {
     expect(hand2.length, 0);
 
   });
+
+  test('Test Deck functionality', () {
+    DefaultCardDeck deck = DefaultCardDeck();
+    
+    expect(deck.addedCards.length, 52);
+    expect(() => deck.addedCards.clear(), throwsUnsupportedError);
+    expect(() => deck.addedCards.shuffle(), throwsUnsupportedError);
+    
+    CardPile dup = deck.duplicate();
+    expect(dup.length, 52);
+    for (int i=0; i< dup.length; i++) {
+      expect(dup.whatIsCard(i), deck.whatIsCard(i));
+    }
+    expect(deck.rankName(DefaultCardDeck.hearts, 2), "two");
+    expect(deck.rankName(DefaultCardDeck.clubs, 13), "king");
+    expect(deck.cardName(DefaultCardDeck.diamonds, 5), "five of diamonds");
+    expect(deck.cardName(DefaultCardDeck.spades, 11), "jack of spades");
+
+    expect(deck.cardByRankName(DefaultCardDeck.hearts, "two")?.rank, 2);
+    expect(deck.cardByRankName(DefaultCardDeck.clubs, "king")?.rank, 13);
+    expect(deck.cardByRank(DefaultCardDeck.diamonds, 5)?.name, "five of diamonds");
+    expect(deck.cardByRank(DefaultCardDeck.spades, 11)?.name, "jack of spades");
+  });
 }
