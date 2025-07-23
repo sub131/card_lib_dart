@@ -289,15 +289,12 @@ class Deck extends CardPile {
     }
     addCard(newCard);
 
-    // If the Suit doesn't know about the rank add it
-    if (suit.rankNumber(rankName)==null) {
-      //If not already added, add it.
-      _addedCards.add(newCard);
-      if (!_addedCardsBySuitRank.containsKey(suit)) {
-        _addedCardsBySuitRank[suit] = {};
-      }
-      _addedCardsBySuitRank[suit]?[newCard.rank] = newCard;
+    //If not already added, add it.
+    _addedCards.add(newCard);
+    if (!_addedCardsBySuitRank.containsKey(suit)) {
+      _addedCardsBySuitRank[suit] = {};
     }
+    _addedCardsBySuitRank[suit]?[newCard.rank] = newCard;
   }
 
   /// Looks up the rank name by suit and rank number
