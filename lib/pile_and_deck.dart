@@ -2,9 +2,6 @@
 // Copyright (c) 2025 by sub131
 
 import 'card_and_suit.dart';
-class Game {
-  /// TBD
-}
 
 /// For efficiency, cardPiles are implemented as a reversed list since most common actions are
 /// to add or remove from the top (end of list). All lists returned will be unmodifyable 

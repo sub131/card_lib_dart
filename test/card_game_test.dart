@@ -7,8 +7,6 @@ import 'package:playing_cards/pile_and_deck.dart';
 import 'package:playing_cards/card_and_suit.dart';
 
 void main() {
-  Game calc = Game();
-  calc.toString;
 
   test('Creates one of each', () {
 
