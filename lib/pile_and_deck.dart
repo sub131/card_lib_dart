@@ -13,7 +13,7 @@ class CardPile {
   final List<Card> _cards = [];
   bool isTopVisible = false;
 
-  int get length { return _cards.length;}
+  get length { return _cards.length;}
   List<Card> get cards { return List<Card>.unmodifiable(_cards.reversed);}
 
   /// Shuffles the deck
@@ -235,7 +235,15 @@ class CardPile {
   }
 
   @override
-  String toString() => cards.toString();
+  String toString() {
+    List<String> names = [];
+    for (Card c in cards) {
+      names.add(c.name);
+    }
+    return names.toString();
+  }
+  
+  Iterable get iterator => cards;
 
 }
 
