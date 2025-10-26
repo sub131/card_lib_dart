@@ -32,7 +32,7 @@ class Suit extends Named {
       _rankNames.add(name);
       _rankNamesToRank[name] = numOfRanks;
     }
-    return numOfRanks;
+    return _rankNamesToRank[name]??numOfRanks;
   }
   final int suitNum;
   Suit(super.name) : suitNum = suitNames.length+1
