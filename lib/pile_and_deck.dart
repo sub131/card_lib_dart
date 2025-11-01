@@ -11,7 +11,19 @@ import 'card_and_suit.dart';
 /// leave the pile at 3, 2, 1 with 3 on the top.
 class CardPile {
   final List<Card> _cards = [];
-  bool isTopVisible = false;
+  CardVisibility _topCardVisiblity = CardVisibility.hidden;
+  CardVisibility _deckVisiblity = CardVisibility.hidden;
+
+  CardVisibility get deckVisiblity => _deckVisiblity;
+  set deckVisiblity(CardVisibility visibility) {
+    _deckVisiblity = visibility;
+    updateVisibility(allCards:true);
+  }
+  CardVisibility get topCardVisiblity => _topCardVisiblity;
+  set topCardVisiblity(CardVisibility visibility) {
+    _topCardVisiblity = visibility;
+    updateVisibility();
+  }
 
   get length { return _cards.length;}
   List<Card> get cards { return List<Card>.unmodifiable(_cards.reversed);}
@@ -26,10 +38,26 @@ class CardPile {
     _cards.addAll(reversedList);
   }
 
+  updateVisibility({bool allCards=false, Card? card}) {
+    if (_cards.isNotEmpty) {
+      if (allCards) {
+        for (int i=0; i < _cards.length-1; i++) {
+          _cards[i].visibility = deckVisiblity;
+        }
+      }
+      if (card != null) {
+        card.visibility = deckVisiblity;
+      }
+      _cards.last.visibility = topCardVisiblity;
+    }
+  }
+
   /// Removes the top card and returns it to be put elsewhere
   Card? removeTopCard() {
     if (length > 0) {
-      return _cards.removeLast();
+      Card? removed = _cards.removeLast();
+      updateVisibility(); //Ensure top card visibility is updated
+      return removed;
     } else {
       return null;
     }
@@ -49,7 +77,9 @@ class CardPile {
   Card? removeCard(int index) {
     if (_validIndex(index)) {
       // Remove reversed index (0 = last, length-1 = first)
-      return _cards.removeAt(_reverseIndex(index));
+      Card? removedCard = _cards.removeAt(_reverseIndex(index));
+      updateVisibility(); //Ensure top card visibility is updated
+      return removedCard;
     } else {
       return null;
     }
@@ -90,7 +120,9 @@ class CardPile {
           (suit == null || card.suit == suit) && 
           (rankName == null || card.rankName == rankName) &&
           (rank == null || card.rank == rank)) {
-        return removeCard(index);
+        Card? removedCard = removeCard(index);
+        updateVisibility(); //Ensure top card visibility is updated
+        return removedCard;
       }
     }
     return null;
@@ -130,6 +162,7 @@ class CardPile {
     if (card==null) {
       return false;
     } else {
+      updateVisibility(); //Ensure top card visibility is updated
       pile.addCard(card);
       return true;
     }
@@ -151,18 +184,22 @@ class CardPile {
       removed = true;
       card = removeFirstMatchingCard(suit: suit, rankName: rankName, rank: rank);
     }
+    updateVisibility(); //Ensure top card visibility is updated
     return removed;
   }
 
   /// Puts the card on the top of this pile
   addCard(Card card) {
+    Card? oldLast = _cards.isNotEmpty ? _cards.last : null;
     _cards.add(card);
+    updateVisibility(card:oldLast); //Ensure top card visibility is updated
   }
 
   /// Moves the top card to the specified pile, returning true if there was a card
   bool moveTopCardToPile(CardPile other) {
     Card? card = removeTopCard();
     if (card != null) {
+      updateVisibility(); //Ensure top card visibility is updated
       other.addCard(card);
       return true;
     } else {
@@ -174,6 +211,7 @@ class CardPile {
   bool moveCardToPile(CardPile other, int index) {
     Card? card = removeCard(index);
     if (card != null) {
+      updateVisibility(); //Ensure top card visibility is updated
       other.addCard(card);
       return true;
     } else {
@@ -195,6 +233,7 @@ class CardPile {
         done = true;
       }
     }
+    updateVisibility(); //Ensure top card visibility is updated
     return cardsDealt;
   }
 
@@ -218,6 +257,7 @@ class CardPile {
         done = handsDealt >= maxCardsPerHand;
       }
     }
+    updateVisibility(); //Ensure top card visibility is updated
     return cardsDealt;
   }
 
@@ -259,6 +299,7 @@ class Deck extends CardPile {
   CardPile duplicate() {
     CardPile newPile = CardPile();
     newPile._cards.addAll(_addedCards);
+    newPile.updateVisibility(allCards:true); //Ensure top card visibility is updated
     return newPile;
   }
   

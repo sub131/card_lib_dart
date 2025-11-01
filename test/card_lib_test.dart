@@ -8,10 +8,66 @@ import 'package:playing_cards/card_and_suit.dart';
 
 void main() {
 
+  test('Test card and pile visibility', () {
+    Deck deck = Deck.emptyDeck();
+    expect(deck.deckVisiblity, CardVisibility.hidden);
+    expect(deck.topCardVisiblity, CardVisibility.hidden);
+
+    Suit s1 = Suit("VisibilityTestSuit");
+    deck.addNewCard(s1, "v3");
+    deck.addNewCard(s1, "v2");
+    deck.addNewCard(s1, "v1");
+
+    Card card1 = deck.whatIsTopCard()!;
+    expect(card1, isNotNull);
+    Card card2 = deck.whatIsCard(1)!;
+    expect(card2, isNotNull);
+    Card card3 = deck.whatIsCard(2)!;
+    expect(card3, isNotNull);
+
+    deck.whatIsTopCard()!.visibility = CardVisibility.hidden;
+    expect(card1.visibility, CardVisibility.hidden);
+    expect(card2.visibility, CardVisibility.hidden);
+    expect(card3.visibility, CardVisibility.hidden);
+
+    deck.deckVisiblity = CardVisibility.visible;
+    expect(card1.visibility, CardVisibility.hidden); 
+    expect(card2.visibility, CardVisibility.visible); 
+    expect(card3.visibility, CardVisibility.visible); 
+
+    deck.topCardVisiblity =  CardVisibility.pileVisible;
+    expect(card1.visibility, CardVisibility.pileVisible);
+    expect(card2.visibility, CardVisibility.visible); 
+    expect(card3.visibility, CardVisibility.visible);
+
+    deck.addNewCard(s1, "v4");
+    Card card4 = deck.whatIsTopCard()!;
+    expect(card4, isNotNull); 
+    expect(card4.visibility, CardVisibility.pileVisible);
+    expect(card1.visibility, CardVisibility.visible);
+    expect(card2.visibility, CardVisibility.visible); 
+    expect(card3.visibility, CardVisibility.visible);
+
+    deck.removeTopCard();
+    expect(card1.visibility, CardVisibility.pileVisible);
+    expect(card2.visibility, CardVisibility.visible);
+    expect(card3.visibility, CardVisibility.visible);
+
+    deck.addCard(card4);
+    expect(card4.visibility, CardVisibility.pileVisible); 
+    expect(card1.visibility, CardVisibility.visible);
+    expect(card2.visibility, CardVisibility.visible); 
+    expect(card3.visibility, CardVisibility.visible);
+
+    expect(Suit.numOfSuits, 1); //From previous
+    Suit.resetSuits();
+  });
+
   test('Creates one of each', () {
 
     /// Test addition of suits and cards
     String test= "Test";
+    Suit.resetSuits();
     expect(Suit.numOfSuits, 0);
     
     Suit s1 = Suit(test);

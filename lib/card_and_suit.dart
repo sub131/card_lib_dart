@@ -19,6 +19,10 @@ class Suit extends Named {
   static List<String> get suitNames {return List<String>.unmodifiable(_suitNames);}
   static String? suitName(int suitNum) {return _suitNames.elementAtOrNull(suitNum);}
   static int? suitNumber(String suitName) {return _suitNamesToSuitNum.containsKey(suitName) ? _suitNamesToSuitNum[suitName]: null;}
+  static resetSuits() {
+    _suitNames.clear();
+    _suitNamesToSuitNum.clear();
+  }
   
   final Map<String, int> _rankNamesToRank={};
   final List<String> _rankNames=[];
@@ -45,10 +49,22 @@ class Suit extends Named {
   }
 }
 
+enum CardVisibility {
+  hidden, ///< hidden from all
+  visible, ///< visible to all
+  pileVisible, ///< visible only to the pile/player
+  special1, ///< special visibility rules apply
+  special2, ///< special visibility rules apply
+  special3, ///< special visibility rules apply
+  special4, ///< special visibility rules apply
+  special5, ///< special visibility rules apply
+}
+
 class Card extends Named {
   final Suit suit;
   final int rank;
   final String rankName;
+  CardVisibility visibility = CardVisibility.hidden; 
   Card(this.suit, this.rankName, super.name) : rank = suit._incrementCards(rankName);
   Card.standard52(this.suit, this.rankName) : rank = suit._incrementCards(rankName), super("$rankName of ${suit.name}");
   
