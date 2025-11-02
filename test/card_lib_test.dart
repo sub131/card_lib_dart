@@ -245,9 +245,9 @@ void main() {
     var deck = DefaultCardDeckWithJokers();
     expect(Suit.numOfSuits, prevSuitCount);
 
-    CardPile discard = CardPile();
-    CardPile hand1 = CardPile();
-    CardPile hand2 = CardPile();
+    CardPile discard = CardPile('discard');
+    CardPile hand1 = CardPile('hand1');
+    CardPile hand2 = CardPile('hand2');
 
     expect(deck.length, cardsLeft);
     expect(discard.length, 0);

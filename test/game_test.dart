@@ -32,7 +32,7 @@ void main() {
     expect(DefaultCardDeck.hearts.numOfRanks, 13);
     expect(scoreBlackJack(deck), (55+30)*4);
 
-    var testNormal = CardPile();
+    var testNormal = CardPile('scoreTest');
     expect(scoreBlackJack(testNormal), 0);
     deck.moveFirstMatchingCardToPile(testNormal, suit:DefaultCardDeck.diamonds, rankName:"two");
     expect(scoreBlackJack(testNormal), 2);
@@ -68,11 +68,11 @@ void main() {
     expect(size, 52);
     expect(deck.length, 52);
 
-    var player1 = CardPile();
-    var player2 = CardPile();
-    var player3 = CardPile();
-    var player4 = CardPile();
-    var dealer = CardPile();
+    var player1 = CardPile('player1');
+    var player2 = CardPile('player2');
+    var player3 = CardPile('player3');
+    var player4 = CardPile('player4');
+    var dealer = CardPile('dealer');
     var players = [player1, player2, player3, player4, dealer];
 
     Card? topCard = deck.whatIsTopCard();
@@ -213,9 +213,9 @@ void main() {
     expect(DefaultCardDeck.diamonds.numOfRanks, 13);
     
     //Stack the deck
-    CardPile aces = CardPile();
-    CardPile kings = CardPile();
-    CardPile dealer = CardPile();
+    CardPile aces = CardPile('aces');
+    CardPile kings = CardPile('kings');
+    CardPile dealer = CardPile('dealer');
     deck.moveAllMatchingCardsToPile(aces, rank: 1);
     deck.moveAllMatchingCardsToPile(kings, rank: 13);
     deck.moveFirstMatchingCardToPile(dealer, rank: 12);
@@ -242,10 +242,10 @@ void main() {
     expect(DefaultCardDeck.diamonds.numOfRanks, 13);
     
     //Stack the deck
-    CardPile aces = CardPile();
-    CardPile kings = CardPile();
-    CardPile dealer = CardPile();
-    CardPile otherPlayer = CardPile();
+    CardPile aces = CardPile('aces');
+    CardPile kings = CardPile('kings');
+    CardPile dealer = CardPile('dealer');
+    CardPile otherPlayer = CardPile('otherPlayer');
     deck.moveAllMatchingCardsToPile(aces, rank: 1);
     deck.moveAllMatchingCardsToPile(kings, rank: 13);
     deck.moveFirstMatchingCardToPile(dealer, rank: 12);

@@ -5,7 +5,7 @@ import 'package:playing_cards/pile_and_deck.dart';
 
 /// Abstract class in case we want to add anything to common decks, like reset, etc.
 abstract class CommonDefaultDecks extends Deck {
-  CommonDefaultDecks(super.deckInfo, {super.addSuitToName=true});
+  CommonDefaultDecks(super.name, super.deckInfo, {super.addSuitToName=true});
 }
 
 /// Standard 52 card deck, no jokers
@@ -24,14 +24,20 @@ class DefaultCardDeck extends CommonDefaultDecks {
     return deckInfo;
   }
 
-  /// Creates a standard deck
-  DefaultCardDeck() :super(_populateInfo());
+  static int compareCards(Card left, Card right, {bool aceHigh=true}) {
+    int leftRank = (aceHigh && left.rank==0) ? 13:left.rank;
+    int rightRank = (aceHigh && right.rank==0) ? 13:right.rank;
+    return leftRank.compareTo(rightRank);
+  }
 
   /// Creates a standard deck
-  DefaultCardDeck.createFromInfo(super.info);
+  DefaultCardDeck() :super('Standard52',_populateInfo());
+
+  /// Creates a standard deck
+  DefaultCardDeck.createFromInfo(super.name, super.info);
 
   /// Creates a standard multi-deck deck
-  DefaultCardDeck.createMultipleDecks(int totalNumOfDecks) :super(_populateInfo()) {
+  DefaultCardDeck.createMultipleDecks(int totalNumOfDecks) :super('Standard52 x $totalNumOfDecks', _populateInfo()) {
     // Start at 1 since we already have this deck finished
     for (int i=1; i<totalNumOfDecks; i++) {
       CardPile otherPile = duplicate();
@@ -49,10 +55,22 @@ class DefaultCardDeckWithJokers extends DefaultCardDeck {
     deckInfo[jokers] = jokerNames;
     return deckInfo;
   }
-  DefaultCardDeckWithJokers() :super.createFromInfo(_populateInfo());
+  static int compareCards(Card left, Card right, {bool aceHigh=true}) {
+    int leftRank = (aceHigh && left.rank==0) ? 13:left.rank;
+    int rightRank = (aceHigh && right.rank==0) ? 13:right.rank;
+    if (left.suit == jokers) {
+      leftRank = aceHigh?13:12;
+    }
+    if (right.suit == jokers) {
+      rightRank = aceHigh?13:12;
+    }
+    return leftRank.compareTo(rightRank);
+  }
+  
+  DefaultCardDeckWithJokers() :super.createFromInfo('Standard52wJkrs', _populateInfo());
 
   /// Creates a standard multi-deck deck
-  DefaultCardDeckWithJokers.createMultipleDecks(int totalNumOfDecks) :super.createFromInfo(_populateInfo()) {
+  DefaultCardDeckWithJokers.createMultipleDecks(int totalNumOfDecks) :super.createFromInfo('Standard52wJkrs x $totalNumOfDecks', _populateInfo()) {
     // Start at 1 since we already have this deck finished
     for (int i=1; i<totalNumOfDecks; i++) {
       CardPile otherPile = duplicate();
@@ -77,5 +95,5 @@ class ClueDeck extends CommonDefaultDecks {
     return deckInfo;
   }
 
-  ClueDeck() :super(_populateInfo(), addSuitToName: false);
+  ClueDeck() :super('ClueDeck',_populateInfo(), addSuitToName: false);
 }

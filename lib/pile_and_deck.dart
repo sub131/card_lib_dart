@@ -1,6 +1,8 @@
 // MIT License
 // Copyright (c) 2025 by sub131
 
+import 'package:playing_cards/named.dart';
+
 import 'card_and_suit.dart';
 
 /// For efficiency, cardPiles are implemented as a reversed list since most common actions are
@@ -9,7 +11,7 @@ import 'card_and_suit.dart';
 /// That has the consequence that some operations seem backwards. Adding a card adds it to the
 /// top (index 0), removing it removes it from the top (index 0). Adding 1, 2, then 3 will 
 /// leave the pile at 3, 2, 1 with 3 on the top.
-class CardPile {
+class CardPile extends Named {
   final List<Card> _cards = [];
   CardVisibility _topCardVisiblity = CardVisibility.hidden;
   CardVisibility _deckVisiblity = CardVisibility.hidden;
@@ -24,6 +26,8 @@ class CardPile {
     _topCardVisiblity = visibility;
     updateVisibility();
   }
+
+  CardPile(super.name);
 
   get length { return _cards.length;}
   List<Card> get cards { return List<Card>.unmodifiable(_cards.reversed);}
@@ -280,7 +284,7 @@ class CardPile {
     for (Card c in cards) {
       names.add(c.name);
     }
-    return names.toString();
+    return '$name: $names';
   }
   
   Iterable get iterator => cards;
@@ -296,8 +300,8 @@ class Deck extends CardPile {
   List<Card> get addedCards {return List<Card>.unmodifiable(_addedCards);}
 
   /// Duplicates the deck by adding all known cards into a new empty pile.
-  CardPile duplicate() {
-    CardPile newPile = CardPile();
+  CardPile duplicate({duplicateName}) {
+    CardPile newPile = CardPile(duplicateName ?? '${name}_duplicate');
     newPile._cards.addAll(_addedCards);
     newPile.updateVisibility(allCards:true); //Ensure top card visibility is updated
     return newPile;
@@ -307,7 +311,7 @@ class Deck extends CardPile {
   /// @param rankNamesPerSuit a mapping of suits to list of rank names in that suit
   /// @param addSuitToName set to true to use the same name for the card as for the rankName (default true)
   ///   (e.g. '$rankName' vs '$rankName of ${suit.name}') 
-  Deck(Map<Suit,List<String>> rankNamesPerSuit, {bool addSuitToName=true}) {
+  Deck(super.name, Map<Suit,List<String>> rankNamesPerSuit, {bool addSuitToName=true}) {
     for (var suit in rankNamesPerSuit.keys) {
       for (var name in (rankNamesPerSuit[suit]??[])) {
         addSuitToName ? 
@@ -317,7 +321,7 @@ class Deck extends CardPile {
     }
   }
   /// Constructor for an empty deck
-  Deck.emptyDeck();
+  Deck.emptyDeck() : super('empty');
 
   /// Adds a new card to the deck. 
   addNewCard(Suit suit, String rankName, {String? cardName}) {
