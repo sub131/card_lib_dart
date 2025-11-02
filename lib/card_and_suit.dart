@@ -3,7 +3,7 @@
 
 //@TODO: Add suit and card compare, ace high, jokers higher?
 
-import 'package:playing_cards/named.dart';
+import 'package:card_lib_dart/named.dart';
 
 /// Suit class, contains information about the suit and card names in it, including:
 /// - Suit.suitNames: Names of all created suits

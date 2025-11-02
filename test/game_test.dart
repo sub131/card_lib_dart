@@ -2,9 +2,9 @@
 // Copyright (c) 2025 by sub131
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:playing_cards/common_decks.dart';
-import 'package:playing_cards/pile_and_deck.dart';
-import 'package:playing_cards/card_and_suit.dart';
+import 'package:card_lib_dart/common_decks.dart';
+import 'package:card_lib_dart/pile_and_deck.dart';
+import 'package:card_lib_dart/card_and_suit.dart';
 
 void main() {
 

@@ -1,7 +1,7 @@
 // MIT License
 // Copyright (c) 2025 by sub131
 
-import 'package:playing_cards/named.dart';
+import 'package:card_lib_dart/named.dart';
 
 import 'card_and_suit.dart';
 
