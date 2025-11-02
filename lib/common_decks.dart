@@ -79,14 +79,14 @@ class DefaultCardDeckWithJokers extends DefaultCardDeck {
   }
 }
 
-/// Creates a clue-style deck with default cards
-class ClueDeck extends CommonDefaultDecks {
+/// Creates a clue-style who-done-it deck with default cards to test non-standard decks
+class MysteryDeck extends CommonDefaultDecks {
   static Suit who = Suit("who");
   static Suit what = Suit("what");
   static Suit where = Suit("where");
-  static List<String> people = ["Colonel Mustard","Mrs. White","Mrs. Peacock","Mr. Green","Professor Plum","Miss Scarlet"];
-  static List<String> weapons = ["candlestick","rope","lead pipe","wrench","revolver","dagger"];
-  static List<String> locations = ["Ballroom","Billiard Room","Conservatory","Dining Room","Hall","Kitchen","Lounge","Library","Study"];
+  static List<String> people = ["Colonel Canary","Mrs. Snow","Mrs. Penguin","Mr. Leaf","Professor Pepper","Miss Red"];
+  static List<String> weapons = ["broomstick","noose","copper pipe","hammer","gun","knife"];
+  static List<String> locations = ["Dancefloor","Game Room","Greenhouse","Dining Room","Hallway","Kitchen","Sitting Room","Living Room","Office"];
   static Map<Suit,List<String>> _populateInfo() {
     Map<Suit,List<String>> deckInfo = {};
     deckInfo[who] = people;
@@ -95,5 +95,5 @@ class ClueDeck extends CommonDefaultDecks {
     return deckInfo;
   }
 
-  ClueDeck() :super('ClueDeck',_populateInfo(), addSuitToName: false);
+  MysteryDeck() :super('MysteryDeck',_populateInfo(), addSuitToName: false);
 }

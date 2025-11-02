@@ -1,5 +1,5 @@
 name: playing_cards
-description: "Card Library written in Dart for a customizable deck of cards. Supports 52 card decks as well as non-suited decks."
+description: "Card Library written in Dart for a customizable deck of cards. Supports 52 card decks as well as custom suits or non-suited decks."
 version: 0.0.1
 homepage:
 

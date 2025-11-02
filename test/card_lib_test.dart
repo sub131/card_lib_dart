@@ -149,29 +149,29 @@ void main() {
 
   test('Create default names, weapons and locations, picks random ones', () {
     int prevSuitCount = Suit.numOfSuits;
-    var deck = ClueDeck();
+    var deck = MysteryDeck();
 
     expect(Suit.numOfSuits, 3+prevSuitCount);
     
-    expect(ClueDeck.who.numOfRanks, 6);
-    expect(ClueDeck.what.numOfRanks, 6);
-    expect(ClueDeck.where.numOfRanks, 9);
+    expect(MysteryDeck.who.numOfRanks, 6);
+    expect(MysteryDeck.what.numOfRanks, 6);
+    expect(MysteryDeck.where.numOfRanks, 9);
     Suit why = Suit("why");
     expect(Suit.numOfSuits, 4+prevSuitCount);
   
     deck.shuffle();
     var size = deck.cards.length;
 
-    Card? who1 = deck.removeFirstMatchingCard(suit: ClueDeck.who);
-    Card? what1 = deck.removeFirstMatchingCard(suit: ClueDeck.what);
-    Card? where1 = deck.removeFirstMatchingCard(suit: ClueDeck.where);
+    Card? who1 = deck.removeFirstMatchingCard(suit: MysteryDeck.who);
+    Card? what1 = deck.removeFirstMatchingCard(suit: MysteryDeck.what);
+    Card? where1 = deck.removeFirstMatchingCard(suit: MysteryDeck.where);
     Card? why1 = deck.removeFirstMatchingCard(suit: why);
     expect(deck.cards.length, size-3, reason: "Expect 3 removed");
     debugPrint('$who1 + $what1 + $where1 + $why1');
 
-    expect(who1?.suit, ClueDeck.who);
-    expect(what1?.suit, ClueDeck.what);
-    expect(where1?.suit, ClueDeck.where);
+    expect(who1?.suit, MysteryDeck.who);
+    expect(what1?.suit, MysteryDeck.what);
+    expect(where1?.suit, MysteryDeck.where);
     expect(why1?.suit, null, reason: "Expect no motives in default deck");
   });
 

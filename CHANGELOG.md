@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release, customizable cards, piles, and decks, with names and metadata
