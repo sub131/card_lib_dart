@@ -1,13 +1,11 @@
 // MIT License
 // Copyright (c) 2025 by sub131
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:card_lib_dart/common_decks.dart';
 import 'package:card_lib_dart/pile_and_deck.dart';
 import 'package:card_lib_dart/card_and_suit.dart';
 
 void main() {
-
   test('Test card and pile visibility', () {
     Deck deck = Deck.emptyDeck();
     expect(deck.deckVisiblity, CardVisibility.hidden);
@@ -31,21 +29,21 @@ void main() {
     expect(card3.visibility, CardVisibility.hidden);
 
     deck.deckVisiblity = CardVisibility.visible;
-    expect(card1.visibility, CardVisibility.hidden); 
-    expect(card2.visibility, CardVisibility.visible); 
-    expect(card3.visibility, CardVisibility.visible); 
+    expect(card1.visibility, CardVisibility.hidden);
+    expect(card2.visibility, CardVisibility.visible);
+    expect(card3.visibility, CardVisibility.visible);
 
-    deck.topCardVisiblity =  CardVisibility.pileVisible;
+    deck.topCardVisiblity = CardVisibility.pileVisible;
     expect(card1.visibility, CardVisibility.pileVisible);
-    expect(card2.visibility, CardVisibility.visible); 
+    expect(card2.visibility, CardVisibility.visible);
     expect(card3.visibility, CardVisibility.visible);
 
     deck.addNewCard(s1, "v4");
     Card card4 = deck.whatIsTopCard()!;
-    expect(card4, isNotNull); 
+    expect(card4, isNotNull);
     expect(card4.visibility, CardVisibility.pileVisible);
     expect(card1.visibility, CardVisibility.visible);
-    expect(card2.visibility, CardVisibility.visible); 
+    expect(card2.visibility, CardVisibility.visible);
     expect(card3.visibility, CardVisibility.visible);
 
     deck.removeTopCard();
@@ -54,9 +52,9 @@ void main() {
     expect(card3.visibility, CardVisibility.visible);
 
     deck.addCard(card4);
-    expect(card4.visibility, CardVisibility.pileVisible); 
+    expect(card4.visibility, CardVisibility.pileVisible);
     expect(card1.visibility, CardVisibility.visible);
-    expect(card2.visibility, CardVisibility.visible); 
+    expect(card2.visibility, CardVisibility.visible);
     expect(card3.visibility, CardVisibility.visible);
 
     expect(Suit.numOfSuits, 1); //From previous
@@ -64,12 +62,11 @@ void main() {
   });
 
   test('Creates one of each', () {
-
     /// Test addition of suits and cards
-    String test= "Test";
+    String test = "Test";
     Suit.resetSuits();
     expect(Suit.numOfSuits, 0);
-    
+
     Suit s1 = Suit(test);
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 0);
@@ -77,22 +74,22 @@ void main() {
     deck1.addNewCard(s1, "t1");
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 1);
-    
+
     deck1.addNewCard(s1, "t1");
     expect(Suit.numOfSuits, 1);
-    expect(s1.numOfRanks, 1, reason:"adding duplicate doesn't increment rank");
-    expect(deck1.length, 2, reason: 'Adding duplicate');  
+    expect(s1.numOfRanks, 1, reason: "adding duplicate doesn't increment rank");
+    expect(deck1.length, 2, reason: 'Adding duplicate');
     deck1.addNewCard(s1, "t2");
 
-    /// Test removal of matching cards and WhatIsCard functions 
+    /// Test removal of matching cards and WhatIsCard functions
     // [t2, t1, t1]
     expect(deck1.length, 3);
     expect(deck1.whatIsTopCard()?.name, "t2 of Test");
     expect(deck1.whatIsCard(0)?.name, "t2 of Test");
     expect(deck1.whatIsCard(1)?.name, "t1 of Test");
-    expect(deck1.whatIsCard(2)?.name, "t1 of Test"); 
+    expect(deck1.whatIsCard(2)?.name, "t1 of Test");
     Card? firstT1 = deck1.removeFirstMatchingCard(rankName: "t1");
-    // [t2, t1] 
+    // [t2, t1]
     expect(firstT1?.name, "t1 of Test");
     expect(deck1.length, 2);
     expect(deck1.whatIsTopCard()?.name, "t2 of Test");
@@ -100,28 +97,36 @@ void main() {
     expect(deck1.whatIsCard(1)?.name, "t1 of Test");
     expect(deck1.whatIsCard(2)?.name, null);
 
-    Card? nullCard = deck1.removeFirstMatchingCard(suit: s1, rank: 2, rankName: "t1");
-    // [t2, t1] 
+    Card? nullCard = deck1.removeFirstMatchingCard(
+      suit: s1,
+      rank: 2,
+      rankName: "t1",
+    );
+    // [t2, t1]
     expect(nullCard, null);
     Card? firstT2 = deck1.removeFirstMatchingCard(suit: s1, rank: 2);
-    // [t1] 
+    // [t1]
     expect(firstT2?.name, "t2 of Test");
     expect(deck1.length, 1);
     expect(deck1.whatIsTopCard()?.name, "t1 of Test");
     expect(deck1.whatIsCard(0)?.name, "t1 of Test");
     expect(deck1.whatIsCard(1)?.name, null);
-    expect(deck1.whatIsCard(2)?.name, null);  
+    expect(deck1.whatIsCard(2)?.name, null);
 
     /// Test duplicate suits
-    expect(() => Suit(" Test".trimLeft()), throwsA(isArgumentError), reason: "no duplicate Suits");
-    
+    expect(
+      () => Suit(" Test".trimLeft()),
+      throwsA(isArgumentError),
+      reason: "no duplicate Suits",
+    );
+
     /// Add second suit
     expect(Suit.numOfSuits, 1);
     expect(s1.numOfRanks, 2);
     Suit s2 = Suit("Test2");
     expect(Suit.numOfSuits, 2);
     expect(s2.numOfRanks, 0);
-    
+
     Deck deck2 = Deck.emptyDeck();
     Suit s3 = Suit("Test3");
     deck2.addNewCard(s1, "t1");
@@ -133,32 +138,32 @@ void main() {
     expect(deck2.whatIsCard(0)?.name, "t2 of Test3");
     expect(deck2.whatIsCard(1)?.name, "t1 of Test3");
     expect(deck2.whatIsCard(2)?.name, "t1 of Test2");
-    expect(deck2.whatIsCard(3)?.name, "t1 of Test");  
-    expect(deck2.whatIsCard(4)?.name, null);  
+    expect(deck2.whatIsCard(3)?.name, "t1 of Test");
+    expect(deck2.whatIsCard(4)?.name, null);
 
     deck2.moveAllMatchingCardsToPile(deck1, rankName: "t1");
     // d1=[t1s1, t1s2, t1s3, t1s1] d3=[t2s2]
     expect(deck1.whatIsCard(0)?.name, "t1 of Test");
     expect(deck1.whatIsCard(1)?.name, "t1 of Test2");
     expect(deck1.whatIsCard(2)?.name, "t1 of Test3");
-    expect(deck1.whatIsCard(3)?.name, "t1 of Test");  
-    expect(deck1.whatIsCard(4)?.name, null);  
-    expect(deck2.whatIsCard(0)?.name, "t2 of Test3");  
-    expect(deck2.whatIsCard(1)?.name, null);  
+    expect(deck1.whatIsCard(3)?.name, "t1 of Test");
+    expect(deck1.whatIsCard(4)?.name, null);
+    expect(deck2.whatIsCard(0)?.name, "t2 of Test3");
+    expect(deck2.whatIsCard(1)?.name, null);
   });
 
   test('Create default names, weapons and locations, picks random ones', () {
     int prevSuitCount = Suit.numOfSuits;
     var deck = MysteryDeck();
 
-    expect(Suit.numOfSuits, 3+prevSuitCount);
-    
+    expect(Suit.numOfSuits, 3 + prevSuitCount);
+
     expect(MysteryDeck.who.numOfRanks, 6);
     expect(MysteryDeck.what.numOfRanks, 6);
     expect(MysteryDeck.where.numOfRanks, 9);
     Suit why = Suit("why");
-    expect(Suit.numOfSuits, 4+prevSuitCount);
-  
+    expect(Suit.numOfSuits, 4 + prevSuitCount);
+
     deck.shuffle();
     var size = deck.cards.length;
 
@@ -166,8 +171,8 @@ void main() {
     Card? what1 = deck.removeFirstMatchingCard(suit: MysteryDeck.what);
     Card? where1 = deck.removeFirstMatchingCard(suit: MysteryDeck.where);
     Card? why1 = deck.removeFirstMatchingCard(suit: why);
-    expect(deck.cards.length, size-3, reason: "Expect 3 removed");
-    debugPrint('$who1 + $what1 + $where1 + $why1');
+    expect(deck.cards.length, size - 3, reason: "Expect 3 removed");
+    print('$who1 + $what1 + $where1 + $why1');
 
     expect(who1?.suit, MysteryDeck.who);
     expect(what1?.suit, MysteryDeck.what);
@@ -179,12 +184,12 @@ void main() {
     int prevSuitCount = Suit.numOfSuits;
     var deck = DefaultCardDeck();
 
-    expect(Suit.numOfSuits, 4+prevSuitCount);
+    expect(Suit.numOfSuits, 4 + prevSuitCount);
     expect(DefaultCardDeck.hearts.numOfRanks, 13);
     expect(DefaultCardDeck.clubs.numOfRanks, 13);
     expect(DefaultCardDeck.spades.numOfRanks, 13);
     expect(DefaultCardDeck.diamonds.numOfRanks, 13);
-    
+
     deck.shuffle();
     var size = deck.cards.length;
     expect(size, 52);
@@ -194,8 +199,8 @@ void main() {
     Card? c1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.clubs);
     Card? s1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.spades);
     Card? d1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.diamonds);
-    expect(deck.cards.length, size-4, reason: "Expect 4 removed");
-    debugPrint('$h1 + $c1 + $s1 + $d1');
+    expect(deck.cards.length, size - 4, reason: "Expect 4 removed");
+    print('$h1 + $c1 + $s1 + $d1');
 
     expect(h1?.suit, DefaultCardDeck.hearts);
     expect(c1?.suit, DefaultCardDeck.clubs);
@@ -207,15 +212,15 @@ void main() {
     int prevSuitCount = Suit.numOfSuits;
     var deck = DefaultCardDeckWithJokers();
 
-    expect(Suit.numOfSuits, 1+prevSuitCount);
+    expect(Suit.numOfSuits, 1 + prevSuitCount);
     expect(DefaultCardDeck.hearts.numOfRanks, 13);
     expect(DefaultCardDeck.clubs.numOfRanks, 13);
     expect(DefaultCardDeck.spades.numOfRanks, 13);
     expect(DefaultCardDeck.diamonds.numOfRanks, 13);
     expect(DefaultCardDeckWithJokers.jokers.numOfRanks, 2);
-    
+
     deck.shuffle();
-    var size = deck.cards.length;    
+    var size = deck.cards.length;
     expect(size, 54);
     expect(deck.length, 54);
 
@@ -223,20 +228,26 @@ void main() {
     Card? c1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.clubs);
     Card? s1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.spades);
     Card? d1 = deck.removeFirstMatchingCard(suit: DefaultCardDeck.diamonds);
-    Card? j1 = deck.removeFirstMatchingCard(suit: DefaultCardDeckWithJokers.jokers);
-    expect(deck.cards.length, size-5, reason: "Expect 4 removed");
-    debugPrint('$h1 + $c1 + $s1 + $d1 + $j1');
-    
+    Card? j1 = deck.removeFirstMatchingCard(
+      suit: DefaultCardDeckWithJokers.jokers,
+    );
+    expect(deck.cards.length, size - 5, reason: "Expect 4 removed");
+    print('$h1 + $c1 + $s1 + $d1 + $j1');
+
     expect(h1?.suit, DefaultCardDeck.hearts);
     expect(c1?.suit, DefaultCardDeck.clubs);
     expect(s1?.suit, DefaultCardDeck.spades);
     expect(d1?.suit, DefaultCardDeck.diamonds);
     expect(j1?.suit, DefaultCardDeckWithJokers.jokers);
-    
-    Card? j2 = deck.removeFirstMatchingCard(suit: DefaultCardDeckWithJokers.jokers);
-    Card? jn = deck.removeFirstMatchingCard(suit: DefaultCardDeckWithJokers.jokers);
+
+    Card? j2 = deck.removeFirstMatchingCard(
+      suit: DefaultCardDeckWithJokers.jokers,
+    );
+    Card? jn = deck.removeFirstMatchingCard(
+      suit: DefaultCardDeckWithJokers.jokers,
+    );
     expect(j2?.suit, DefaultCardDeckWithJokers.jokers);
-    expect(jn?.suit, null);    
+    expect(jn?.suit, null);
   });
 
   test('Test CardPile functionality', () {
@@ -256,7 +267,7 @@ void main() {
 
     Suit s1 = deck.whatIsTopCard()!.suit;
     expect(s1, DefaultCardDeckWithJokers.jokers);
-    
+
     // Deal 2 jokers to discard
     int cardsDelt = deck.dealCardsToPile(discard, 2);
     expect(cardsDelt, 2);
@@ -265,13 +276,13 @@ void main() {
     expect(discard.length, 2);
     expect(hand1.length, 0);
     expect(hand2.length, 0);
-    for (int i=0; i<2; i++) {
+    for (int i = 0; i < 2; i++) {
       expect(discard.whatIsCard(i)!.suit, s1);
     }
 
     // Check order of deal
     List<Card> top4 = [];
-    for (int i=0; i<4; i++) {
+    for (int i = 0; i < 4; i++) {
       top4.add(deck.whatIsCard(i)!);
     }
     cardsDelt = deck.dealCards([hand1, hand2], 2);
@@ -294,9 +305,9 @@ void main() {
       trials++;
     }
     expect(trials, greaterThan(0));
-    
+
     // Try to deal more than cards left
-    cardsDelt = deck.dealCardsToPile(discard, cardsLeft+1);
+    cardsDelt = deck.dealCardsToPile(discard, cardsLeft + 1);
     expect(cardsDelt, cardsLeft);
     cardsLeft -= cardsDelt;
     expect(cardsLeft, 0);
@@ -305,7 +316,7 @@ void main() {
     // Remove
     Suit s2 = top4[0].suit;
     expect(hand1.removeTopCard(), top4[0]);
-    expect(hand1.removeCard(1), null); 
+    expect(hand1.removeCard(1), null);
     expect(hand1.removeCard(0), top4[2]);
     expect(hand1.isCardPresent(suit: s2), false);
 
@@ -324,20 +335,20 @@ void main() {
     expect(discard.length, 54);
     expect(hand1.length, 0);
     expect(hand2.length, 0);
-
   });
 
   test('Test Deck functionality', () {
     DefaultCardDeck deck = DefaultCardDeck();
-    
+
     expect(deck.addedCards.length, 52);
     expect(() => deck.addedCards.clear(), throwsUnsupportedError);
     expect(() => deck.addedCards.shuffle(), throwsUnsupportedError);
-    
+
     CardPile dup = deck.duplicate();
     expect(dup.length, 52);
-    for (int i=0; i< dup.length; i++) {
-      expect(dup.whatIsCard(i), deck.whatIsCard(i));
+    for (int i = 0; i < dup.length; i++) {
+      expect(dup.whatIsCard(i)!.name, deck.whatIsCard(i)!.name);
+      expect(identical(dup.whatIsCard(i), deck.whatIsCard(i)), isFalse);
     }
     expect(deck.rankName(DefaultCardDeck.hearts, 2), "two");
     expect(deck.rankName(DefaultCardDeck.clubs, 13), "king");
@@ -346,7 +357,10 @@ void main() {
 
     expect(deck.cardByRankName(DefaultCardDeck.hearts, "two")?.rank, 2);
     expect(deck.cardByRankName(DefaultCardDeck.clubs, "king")?.rank, 13);
-    expect(deck.cardByRank(DefaultCardDeck.diamonds, 5)?.name, "five of diamonds");
+    expect(
+      deck.cardByRank(DefaultCardDeck.diamonds, 5)?.name,
+      "five of diamonds",
+    );
     expect(deck.cardByRank(DefaultCardDeck.spades, 11)?.name, "jack of spades");
   });
 }
